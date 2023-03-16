@@ -4,7 +4,6 @@ import {
   Flex,
   Box,
   FormControl,
-  FormLabel,
   Input,
   Checkbox,
   Stack,
@@ -57,7 +56,7 @@ const SignupPage = () => {
                 alt={'Minilogo'}
                 marginLeft={120}
               />
-              <Link color={'blue.400'}>Entrar</Link>
+              <Link color={'blue.400'} fontWeight={600}>Entrar</Link>
             </Flex>
             <Heading fontSize={33} fontWeight={700} marginTop={8} marginBottom={20}>Olá, boas vindas ao LabEddit ;)</Heading>
           </Flex>
@@ -97,8 +96,6 @@ const SignupPage = () => {
                   bg: 'white',
                 }}
                 borderRadius={27} 
-                border= {'1px solid  #FE7E02'}
-            
                 >
                 Cadastrar
               </Button>
