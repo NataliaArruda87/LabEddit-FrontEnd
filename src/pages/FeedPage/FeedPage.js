@@ -3,25 +3,100 @@ import StatusBar from "../../assets/StatusBar.svg"
 import Like from "../../assets/Like.svg"
 import Dislike from "../../assets/Dislike.svg"
 import Comment from "../../assets/Comment.svg"
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import axios from "axios"
 import {
   Flex,
   Box,
   FormControl,
-  Input,
-  Checkbox,
   Stack,
   Link,
   Button,
   Text,
   useColorModeValue,
   Img,
-  Heading,
   Textarea,
 } from '@chakra-ui/react';
-import { color } from "framer-motion";
 import { auto } from "@popperjs/core"
+import { goToLoginPage } from "../../routes/coordinator"
+
 
 const FeedPage = () => {
+  const navigate = useNavigate()
+  const [post, setPost] = useState([])
+  const [content, setContent] = useState('')
+
+  const onChangeContent = (event) => {
+    setContent(event.target.value );
+};
+
+  useEffect(() => {
+    renderPosts()
+  }, [])
+
+  const renderPosts = async() => {
+    try {
+      const response = await axios.get(`http://localhost:3003/posts/comments`, {
+        headers: {
+          Authorization: window.localStorage.getItem("Token")
+        }
+      })
+      setPost(response.data)
+      console.log(response.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const createPost = async () =>{
+    try {  
+
+        let body = {
+            content,
+        }
+
+        await axios.post(`http://localhost:3003/posts`, body, {
+          headers:{
+              Authorization:window.localStorage.getItem("Token")
+          }})  
+        renderPosts() 
+        setContent('')        
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const likePost = async (postId) => {
+  try {
+      let body = {
+          like: true,
+      }
+      await axios.put(`http://localhost:3003/posts/${postId}/like`, body, {
+        headers:{
+            Authorization: window.localStorage.getItem("Token")
+        }})
+      renderPosts()
+  } catch (error) {
+      console.log(error)
+  }
+}
+
+const dislikePost = async (postId)=>{
+  try {
+      let body = {
+          like: false,
+      }
+      await axios.put(`http://localhost:3003/posts/${postId}/like`,body ,{
+          headers:{
+              Authorization: window.localStorage.getItem("Token")
+          }})
+        renderPosts()
+  } catch (error) {
+      console.log(error)
+  }
+}
+
   return (
     <Flex
       maxh={'926px'}
@@ -62,13 +137,15 @@ const FeedPage = () => {
                 alt={'Minilogo'}
                 marginLeft={120}
               />
-              <Link color={'blue.400'} fontWeight={600}>Logout</Link>
+              <Link color={'blue.400'} fontWeight={600} onClick={() => {goToLoginPage(navigate)}}>Logout</Link>
             </Flex>
           </Flex>
-          <Stack spacing={2}>
+          <Stack spacing={2} marginBottom={6}>
             <FormControl id="post">
               <Textarea
                 type="text" 
+                value={content}
+                onChange={onChangeContent}
                 placeholder="Escreva seu post..."
                 borderRadius={12} 
                 border= {'1px solid #EDEDED'}
@@ -85,25 +162,27 @@ const FeedPage = () => {
                   bg: 'white',
                 }}
                 borderRadius={27} 
-            
+                onClick={() => createPost()}
                 >
                 Postar
               </Button>
               <Stack borderBottom={'1px solid  #FE7E02'}></Stack>
             </Stack>
           </Stack>
+          {
+          post.map((post) => {return (
           <Flex
             bg={'#FBFBFB'}
             align={'start'}
             justify={'center'}
             direction={'column'}
             gap={2}
-            marginTop={6}
+            marginTop={3}
             border={'1px solid #E0E0E0'}
             borderRadius={12} 
             p={2}>
-            <Text fontSize={12} color={'#6F6F6F'}>Enviado por: labaluno83</Text>
-            <Text fontSize={18}>Porque a maioria dos desenvolvedores usam Linux? ou as empresas de tecnologia usam Linux ?</Text>
+            <Text fontSize={12} color={'#6F6F6F'}>Enviado por: {post.creator.name}</Text>
+            <Text fontSize={18}>{post.content}</Text>
             <Flex 
               align={'center'}
               justify={'center'}
@@ -118,7 +197,7 @@ const FeedPage = () => {
                 border={'1px solid #E0E0E0'}
                 borderRadius={27} 
               >
-                <Button border={'none'} bg={'none'} borderRadius={27} marginLeft={-1}>
+                <Button border={'none'} bg={'none'} borderRadius={27} marginLeft={-1} onClick={() => {likePost(post.id)}}>
                   <Img
                     src= {Like}
                     h={13.94}
@@ -126,8 +205,8 @@ const FeedPage = () => {
                     alt={'Like'}
                   />
                 </Button>
-                <Text fontSize={9.56}>1.2k</Text>
-                <Button border={'none'} bg={'none'} borderRadius={27}>
+                <Text fontSize={9.56}>{post.likes}</Text>
+                <Button border={'none'} bg={'none'} borderRadius={27} onClick={() => {dislikePost(post.id)}}>
                   <Img
                     src= {Dislike}
                     h={13.94}
@@ -155,10 +234,11 @@ const FeedPage = () => {
                     alt={'Comment'}
                   />
                 </Button>
-                <Text fontSize={9.56}>132</Text> 
+                <Text fontSize={9.56}>{post.qte_comments}</Text> 
               </Flex>
             </Flex>
           </Flex>
+          )})}
         </Box>
       </Stack>
     </Flex>

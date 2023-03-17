@@ -1,5 +1,6 @@
 import MiniLogo from "../../assets/MiniLogo.svg"
 import StatusBar from "../../assets/StatusBar.svg"
+import { useNavigate } from "react-router-dom";
 import {
   Flex,
   Box,
@@ -14,8 +15,37 @@ import {
   Img,
   Heading,
 } from '@chakra-ui/react';
+import axios from "axios";
+import { useState } from "react";
+import { goToHomePage, goToLoginPage } from "../../routes/coordinator";
 
 const SignupPage = () => {
+
+  const navigate = useNavigate()
+  const [form, setForm] = useState({ name: "", email: "", senha: "" });
+
+  const onChange = (event) => {
+    setForm({ ...form, [event.target.name]: event.target.value });
+  };
+
+  const signUp = async () => {
+    try {
+      let body = {
+        name: form.name,
+        email: form.email,
+        password: form.password
+      }
+
+      const response = await axios.post(`http://localhost:3003/users/signup`, body)
+      console.log("response", response)
+
+      window.localStorage.setItem("Token", response.data.token)
+      goToHomePage(navigate)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <Flex
       maxh={'926px'}
@@ -56,29 +86,41 @@ const SignupPage = () => {
                 alt={'Minilogo'}
                 marginLeft={120}
               />
-              <Link color={'blue.400'} fontWeight={600}>Entrar</Link>
+              <Link color={'blue.400'} fontWeight={600} onClick={() => {goToLoginPage(navigate)}}>Entrar</Link>
             </Flex>
             <Heading fontSize={33} fontWeight={700} marginTop={8} marginBottom={20}>Olá, boas vindas ao LabEddit ;)</Heading>
           </Flex>
           <Stack spacing={1}>
           <FormControl id="apelido">
               <Input 
-                type="apelido" 
+                type="apelido"
+                name="name" 
+                value={form.name}
+                onChange={onChange}
                 placeholder="Apelido"
+                required
                 borderRadius={4}
                 border= {'1px solid #D5D8DE'}/>
             </FormControl>
             <FormControl id="email">
               <Input 
                 type="email" 
+                name="email"
+                value={form.email}
+                onChange={onChange}
                 placeholder="E-mail"
+                required
                 borderRadius={4}
                 border= {'1px solid #D5D8DE'}/>
             </FormControl>
             <FormControl id="password">
               <Input 
-                type="password" 
+                type="password"
+                name="password"
+                value={form.password}
+                onChange={onChange} 
                 placeholder="Senha"
+                required
                 borderRadius={4} 
                 border= {'1px solid #D5D8DE'}/>
             </FormControl>
@@ -96,6 +138,7 @@ const SignupPage = () => {
                   bg: 'white',
                 }}
                 borderRadius={27} 
+                onClick={() => {signUp()}}
                 >
                 Cadastrar
               </Button>

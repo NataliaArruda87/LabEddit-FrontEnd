@@ -1,14 +1,15 @@
 import LabedditLogo from "../../assets/LabedditLogo.svg"
 import StatusBar from "../../assets/StatusBar.svg"
+import { useNavigate } from "react-router-dom";
+import { goToHomePage, goToSignupPage } from "../../routes/coordinator";
+import { useState } from "react";
+import axios from "axios";
 import {
   Flex,
   Box,
   FormControl,
-  FormLabel,
   Input,
-  Checkbox,
   Stack,
-  Link,
   Button,
   Text,
   useColorModeValue,
@@ -16,6 +17,36 @@ import {
 } from '@chakra-ui/react';
 
 const LoginPage = () => {
+
+  const navigate = useNavigate()
+
+  const [form, setForm] = useState({ email: "", senha: "" });
+
+  const onChange = (event) => {
+      setForm({ ...form, [event.target.name]: event.target.value });
+  };
+  
+
+  const LoginToLabeddit = async() => {
+    try {
+      let body  = {
+        email: form.email,
+        password: form.senha
+      }
+
+      const response = await axios.post(`http://localhost:3003/users/login`, body)
+      console.log("response", response)
+
+      window.localStorage.setItem("Token", response.data.token)
+      
+      if(response.data.token !== undefined) {
+        goToHomePage(navigate)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <Flex
       maxh={'926px'}
@@ -43,8 +74,7 @@ const LoginPage = () => {
           />
           <Img
             src= {LabedditLogo}
-            h={'142px'}
-            w={'152px'}
+            h={'142px'}np
             alt={'LabEddit Logo'}
             marginTop={20}
           />
@@ -55,15 +85,23 @@ const LoginPage = () => {
           <Stack spacing={1}>
             <FormControl id="email">
               <Input 
-                type="email" 
+                type="email"
+                name="email"
+                value={form.email} 
+                onChange={onChange}
                 placeholder="E-mail"
+                required
                 borderRadius={4}
                 border= {'1px solid #D5D8DE'}/>
             </FormControl>
             <FormControl id="password">
               <Input 
-                type="password" 
+                type="password"
+                name="senha"
+                value={form.senha}
+                onChange={onChange}
                 placeholder="Senha"
+                required
                 borderRadius={4} 
                 border= {'1px solid #D5D8DE'}/>
             </FormControl>
@@ -75,6 +113,7 @@ const LoginPage = () => {
                   bg: 'white',
                 }}
                 borderRadius={27} 
+                onClick={() => {LoginToLabeddit()}}
                 >
                 Continuar
               </Button>
@@ -87,6 +126,7 @@ const LoginPage = () => {
                 }}
                 borderRadius={27} 
                 border= {'1px solid  #FE7E02'}
+                onClick= {() => goToSignupPage(navigate)}
                 >
                 Crie uma conta!
               </Button>
