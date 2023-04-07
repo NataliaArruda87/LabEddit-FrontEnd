@@ -2,5 +2,4 @@
 
 https://github.com/NataliaArruda87/LabEddit-BackEnd
 
-labedditsm.surge.sh
-
+https://labedditsm.surge.sh/
