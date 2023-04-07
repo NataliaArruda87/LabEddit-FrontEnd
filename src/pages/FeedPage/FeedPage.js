@@ -20,6 +20,7 @@ import {
 } from '@chakra-ui/react';
 import { auto } from "@popperjs/core"
 import { goToLoginPage } from "../../routes/coordinator"
+import { BASE_URL } from "../../constants/BASE_URL"
 
 
 const FeedPage = () => {
@@ -37,7 +38,7 @@ const FeedPage = () => {
 
   const renderPosts = async() => {
     try {
-      const response = await axios.get(`http://localhost:3003/posts/comments`, {
+      const response = await axios.get(`${BASE_URL}/posts/comments`, {
         headers: {
           Authorization: window.localStorage.getItem("Token")
         }
@@ -56,7 +57,7 @@ const FeedPage = () => {
             content,
         }
 
-        await axios.post(`http://localhost:3003/posts`, body, {
+        await axios.post(`${BASE_URL}/posts`, body, {
           headers:{
               Authorization:window.localStorage.getItem("Token")
           }})  
@@ -72,7 +73,7 @@ const likePost = async (postId) => {
       let body = {
           like: true,
       }
-      await axios.put(`http://localhost:3003/posts/${postId}/like`, body, {
+      await axios.put(`${BASE_URL}/posts/${postId}/like`, body, {
         headers:{
             Authorization: window.localStorage.getItem("Token")
         }})
@@ -87,7 +88,7 @@ const dislikePost = async (postId)=>{
       let body = {
           like: false,
       }
-      await axios.put(`http://localhost:3003/posts/${postId}/like`,body ,{
+      await axios.put(`${BASE_URL}/posts/${postId}/like`,body ,{
           headers:{
               Authorization: window.localStorage.getItem("Token")
           }})

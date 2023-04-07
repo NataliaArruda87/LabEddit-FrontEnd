@@ -15,6 +15,7 @@ import {
   useColorModeValue,
   Img,
 } from '@chakra-ui/react';
+import { BASE_URL } from "../../constants/BASE_URL";
 
 const LoginPage = () => {
 
@@ -34,7 +35,7 @@ const LoginPage = () => {
         password: form.senha
       }
 
-      const response = await axios.post(`http://localhost:3003/users/login`, body)
+      const response = await axios.post(`${BASE_URL}/users/login`, body)
       console.log("response", response)
 
       window.localStorage.setItem("Token", response.data.token)
