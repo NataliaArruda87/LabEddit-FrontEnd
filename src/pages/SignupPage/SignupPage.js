@@ -18,6 +18,7 @@ import {
 import axios from "axios";
 import { useState } from "react";
 import { goToHomePage, goToLoginPage } from "../../routes/coordinator";
+import { BASE_URL } from "../../constants/BASE_URL";
 
 const SignupPage = () => {
 
@@ -36,7 +37,7 @@ const SignupPage = () => {
         password: form.password
       }
 
-      const response = await axios.post(`http://localhost:3003/users/signup`, body)
+      const response = await axios.post(`${BASE_URL}/users/signup`, body)
       console.log("response", response)
 
       window.localStorage.setItem("Token", response.data.token)
